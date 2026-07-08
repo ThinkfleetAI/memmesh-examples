@@ -1,0 +1,17 @@
+{
+  "name": "@memmesh-examples/next-best-offer",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx index.ts"
+  },
+  "dependencies": {
+    "@thinkfleet/memory-sdk": "^0.4.0",
+    "@anthropic-ai/sdk": "^0.40",
+    "zod": "^3"
+  },
+  "devDependencies": {
+    "tsx": "^4",
+    "typescript": "^5"
+  }
+}

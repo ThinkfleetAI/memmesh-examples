@@ -1,0 +1,8 @@
+{
+  "name": "@memmesh-examples/financial-copilot",
+  "private": true,
+  "type": "module",
+  "scripts": { "start": "tsx index.ts" },
+  "dependencies": { "@thinkfleet/memory-sdk": "^0.4.0" },
+  "devDependencies": { "tsx": "^4", "typescript": "^5" }
+}
