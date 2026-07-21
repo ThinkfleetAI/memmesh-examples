@@ -36,6 +36,15 @@ cd python/support-agent && pip install -r requirements.txt && python main.py
 Minimal observe → search → reflect quickstarts:
 [`go/quickstart`](go/quickstart) · [`rust/quickstart`](rust/quickstart) · [`dotnet/quickstart`](dotnet/quickstart)
 
+## Skills
+
+Packaged Agent Skills that pair with the MemMesh MCP connector — no SDK, just
+prompt + connector.
+
+| Skill | What it does |
+| --- | --- |
+| [`skills/memmesh-capture`](skills/memmesh-capture) | Persist the durable signal from your LLM conversations into MemMesh as you work — facts, decisions, preferences, and repeatable procedures — via `memory_observe`. Curated by design (not a transcript). Install docs for Claude Code, Codex, Claude web, and ChatGPT. |
+
 ## SDKs
 
 - TypeScript — [`@thinkfleet/memory-sdk`](https://github.com/ThinkfleetAI/thinkfleet-memory-sdk) (`npm i @thinkfleet/memory-sdk`)
