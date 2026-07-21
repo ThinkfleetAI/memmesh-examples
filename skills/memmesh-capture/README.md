@@ -63,10 +63,26 @@ connector is the pipe in both directions.
 Every client uses the same two pieces: **(1)** add the MemMesh MCP server so
 `memory_observe` (and its recall siblings) exist as callable tools, and **(2)**
 give the agent the capture instruction — the Skill itself where supported, or the
-pasted instruction block where not. Connector base is `https://app.memmesh.ai`;
-authorize with a **MeshKey** bearer token (Platform Admin → API Keys) or
-**Cognito OAuth**. The MCP server exposes `memory_observe`, `memory_search` /
+pasted instruction block where not.
+
+The capture (write) server — where `memory_observe` lives — is **project-scoped**
+and speaks **Streamable HTTP**:
+
+```
+https://app.memmesh.ai/api/v1/projects/<PROJECT_ID>/mcp-server/http
+```
+
+Authorize with that **project's MCP token** as a `Bearer` header. Get the token
+from the MemMesh console, or `GET /api/v1/projects/<PROJECT_ID>/mcp-server` and
+read `.token`. The server exposes `memory_observe`, `memory_search` /
 `memory_recall`, `memory_build_context`, and `memory_create_brain`.
+
+> Consuming brains back (recall side) is a different endpoint, authorized with a
+> **MeshKey** (or Cognito OAuth once it ships): a single brain is
+> `…/api/v1/brains/<BRAIN_ID>/mcp-server/http`, and the federation router — every
+> brain you're entitled to behind one endpoint — is
+> `…/api/v1/brains/mcp-server/http`. This skill only needs the write endpoint
+> above.
 
 ### Claude Code — flagship
 
@@ -75,8 +91,9 @@ MemMesh already runs as an MCP server in Claude Code today.
 1. **Add the MCP server.** Either register it globally:
 
    ```bash
-   claude mcp add --transport http memmesh https://app.memmesh.ai/mcp \
-     --header "Authorization: Bearer $MEMMESH_MESHKEY"
+   claude mcp add --transport http memmesh \
+     "https://app.memmesh.ai/api/v1/projects/$MEMMESH_PROJECT_ID/mcp-server/http" \
+     --header "Authorization: Bearer $MEMMESH_PROJECT_MCP_TOKEN"
    ```
 
    or commit a project-scoped `.mcp.json` so your team shares it:
@@ -86,8 +103,8 @@ MemMesh already runs as an MCP server in Claude Code today.
      "mcpServers": {
        "memmesh": {
          "type": "http",
-         "url": "https://app.memmesh.ai/mcp",
-         "headers": { "Authorization": "Bearer ${MEMMESH_MESHKEY}" }
+         "url": "https://app.memmesh.ai/api/v1/projects/${MEMMESH_PROJECT_ID}/mcp-server/http",
+         "headers": { "Authorization": "Bearer ${MEMMESH_PROJECT_MCP_TOKEN}" }
        }
      }
    }
@@ -112,12 +129,18 @@ Codex supports MCP servers and auto-loads an `AGENTS.md` from the repo root.
    ```toml
    [mcp_servers.memmesh]
    command = "npx"
-   args = ["-y", "mcp-remote", "https://app.memmesh.ai/mcp",
-           "--header", "Authorization: Bearer ${MEMMESH_MESHKEY}"]
+   args = [
+     "-y", "mcp-remote",
+     "https://app.memmesh.ai/api/v1/projects/PROJECT_ID/mcp-server/http",
+     "--transport", "http-only",
+     "--header", "Authorization: Bearer PROJECT_MCP_TOKEN",
+   ]
    ```
 
-   (Use whichever HTTP/remote-MCP bridge your Codex build ships; the point is a
-   `memmesh` server pointing at `https://app.memmesh.ai/mcp`.)
+   (Use whichever Streamable-HTTP / remote-MCP bridge your Codex build ships; the
+   point is a `memmesh` server pointing at
+   `https://app.memmesh.ai/api/v1/projects/<PROJECT_ID>/mcp-server/http` with the
+   project MCP token as the Bearer.)
 2. **Load the capture instruction.** Add an `AGENTS.md` snippet at the repo root
    (or fold it into an existing one):
 
@@ -138,7 +161,9 @@ prompt, or the Skill) at the capture behavior.
 ### Claude — web / desktop
 
 1. **Add the MemMesh connector.** Settings → Connectors → add the MemMesh MCP
-   server (base `https://app.memmesh.ai`; MeshKey or OAuth).
+   server at
+   `https://app.memmesh.ai/api/v1/projects/<PROJECT_ID>/mcp-server/http`,
+   authorized with the project's MCP token.
 2. **Enable the skill.** Add [`SKILL.md`](SKILL.md) as a skill so Claude loads it
    in your working conversations.
 3. **Work normally.** Curated signal in, brains out.
@@ -146,7 +171,9 @@ prompt, or the Skill) at the capture behavior.
 ### ChatGPT — web
 
 1. **Add the MemMesh connector** so the `memory_observe` action exists for your
-   GPT (base `https://app.memmesh.ai`; MeshKey or OAuth).
+   GPT — server
+   `https://app.memmesh.ai/api/v1/projects/<PROJECT_ID>/mcp-server/http`,
+   authorized with the project's MCP token.
 2. **Paste the instructions.** Copy the block from
    [`chatgpt-instructions.md`](chatgpt-instructions.md) into a **Custom GPT**
    ("Instructions") or your **account-wide custom instructions** — ChatGPT has no

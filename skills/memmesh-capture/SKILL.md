@@ -86,9 +86,11 @@ clean, self-contained prose.
 - `memory_create_brain` — create a named brain to group a domain's memories,
   when the user explicitly wants a dedicated brain for a project or topic.
 
-Connector base: `https://app.memmesh.ai`. Auth is a MeshKey bearer token or
-Cognito OAuth, configured once when the connector is added — you don't handle
-auth in the skill.
+Capture (write) endpoint — where `memory_observe` lives — is the project-scoped
+MCP server over Streamable HTTP:
+`https://app.memmesh.ai/api/v1/projects/<PROJECT_ID>/mcp-server/http`. Auth is
+the project's MCP token as a Bearer header, configured once when the connector is
+added — you don't handle auth in the skill.
 
 ## Etiquette
 
