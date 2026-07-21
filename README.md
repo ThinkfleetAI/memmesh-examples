@@ -21,6 +21,19 @@ export MEMMESH_PROJECT_ID=proj_...
 cd typescript/predict-anything && npm install && npm start
 ```
 
+## Build a brain
+
+Turn a **public dataset into a specialized brain** any agent can consume over
+MCP — the universal *fetch → shape → bulk-ingest → register + publish* recipe.
+
+| Example | What it shows |
+| --- | --- |
+| [`typescript/build-a-brain-sec`](typescript/build-a-brain-sec) | Build the **SEC finance brain** — the one that matches GPT-4o at ~2.6x lower cost — from SEC EDGAR XBRL filings, end to end. Swap the dataset adapter for your own domain. |
+
+```bash
+cd typescript/build-a-brain-sec && npm install && npm start -- --dry-run --limit=3
+```
+
 ## Python
 
 | Example | What it shows |
